@@ -21,8 +21,14 @@ import can
 import time
 from mycan.read import CanReader
 from mycan.write import CanWriter
+from threading import Thread
 
 
+'''
+1 바퀴 : 3606
+360도 : 3606
+1도 : 10.017
+'''
 
 class UMDCan():
     bus = can.interface.Bus(bustype='pcan', 
@@ -31,111 +37,63 @@ class UMDCan():
 
     def __init__(self):
 
-        self.__reader = CanReader(UMDCan.bus)
-        self.__writer = CanWriter(UMDCan.bus)
-        
-    def compare(self):
-        
-        curstatus = 0
-        prestatus = 0
-        send_data = 0x00
-      
+        self.__reader    = CanReader(UMDCan.bus)
+        self.__writer    = CanWriter(UMDCan.bus)
+        self.MAX_VEL     = 7800
+        self.INCREMENT   = 10.017
+        self.DEGREE      = 0
+        self.CUR_STATUS  = 0
+        self.PRE_STATUS  = 0
+        self.send_data   = 0
+
+    def run(self, degree):
+        self.DEGREE      = degree
+        THRESHOLD   = self.MAX_VEL/(90/degree)
+
         while True:
-
-            read_data = self.__reader.receive_all()
-            
-
+            read_data = self.__reader.run()
 
             if read_data is not None:
+                if read_data == 0:
+                    self.CUR_STATUS = 0
+                    self.send_data = 0
 
-                print("pre : {0} cur : {1}".format(prestatus, curstatus))
-                read_data = self.__reader.convert_int()
-                print("\n")
-                print("Data : {0}".format(read_data)),
-                print("curstatus : %d"%curstatus)
-                
-                '''
-                1 바퀴 : 3606
-                360도 : 3606
-                1도 : 10.017
+                elif THRESHOLD <= read_data <= 65535-THRESHOLD:
+                    self.CUR_STATUS = THRESHOLD
+        
+                self.compare(read_data, THRESHOLD)
 
-                default resolution = 10.017
+    def compare(self, read_data, THRESHOLD):
+        right_rotate_data = read_data - 65535
+        left_rotate_data = read_data
 
+        for i in range (8):
+            if  int(self.INCREMENT * self.DEGREE) * (i+1) * (-1) < right_rotate_data < int(self.INCREMENT * self.DEGREE) * i* (-1):
+                self.CUR_STATUS = (-1) * (i+1)
+            elif int(self.INCREMENT * self.DEGREE) * i < left_rotate_data < int(self.INCREMENT * self.DEGREE) * (i+1):
+                self.CUR_STATUS = i+1                                         
+            # print("{0} {1}".format(right_rotate_data, left_rotate_data))
 
-                -90 <read_Data - 65535 < 0
-                
-                read_data = 0
-                0 < read_data < 90
+            if self.PRE_STATUS != self.CUR_STATUS:
+                print("prestatus : {0}, curstatus : {1}".format(self.PRE_STATUS, self.CUR_STATUS))
 
-                current status
-                previous status
+                if self.CUR_STATUS == i+1:
+                    self.send_data = pow(2,i+1) -1
+                elif self.CUR_STATUS == (-1) * (i+1):
+                    self.send_data = pow(2,i+1) * (pow(2,8-(i+1))-1)
+                elif self.CUR_STATUS == THRESHOLD:
+                    self.send_data = 0x81
 
-                '''
+                self.PRE_STATUS = self.CUR_STATUS
+                self.write()
 
-                if -900 < read_data-65535 < 0:
-                    curstatus = -1
-                    print("-90 ~ 0")
-                if -1800 < read_data-65535 < -900:
-                    curstatus = -2
-                    print("-90 ~ 0")
-                elif 0 < read_data < 900:
-                    curstatus = 1
-                    print("0 ~ 90")
-                elif 900 < read_data < 1800:
-                    curstatus = 2
-                    print("90 ~ 180")
-                elif read_data == 0:
-                    curstatus = 0
-
-                if prestatus != curstatus:
-                    # if curstatus == 1:
-                    print("Change \n")
-                    print("prestatus : {0}, curstatus : {1}".format(prestatus, curstatus))
-                    
-                    if curstatus == 0:
-                        send_data = 0x00
-                    elif curstatus == 1:
-                        send_data = 0x01
-                    elif curstatus == 2:
-                        send_data = 0x03
-                    
-                    if curstatus == -1:
-                        send_data = 0xfe
-                    elif curstatus == -2:
-                        send_data = 0xfc
-                    
-
-                    msg = can.Message(arbitration_id=0x181, data= [0x20, 0x00, 0x00, 0x01, send_data], extended_id=False)
-                    
-                    self.__writer.write(msg)
-
-                    
-                    # if curstatus == 0 and prestatus == -1:
-                        
-                    #     send_data = 0x00
-                    #     self.__writer.write(msg)
-                    # elif curstatus == 1 and prestatus == 0:
-                    #     send_data = 0x01
-                    #     self.__writer.write(msg)
-                    # elif curstatus == -1 and prestatus == 0:
-                    #     send_data = 0xff 
-                    #     self.__writer.write(msg)
-                    
-                    prestatus = curstatus
-
-
-                # prestatus = curstatus
-                # print("2 pre status : %d"%prestatus)
-
-                # print("2 pre status : %d"%prestatus)
-                
-                # else :
-                #     prestatus = curstatus
-
-
-
+    def write(self):
+        msg = can.Message(arbitration_id=0x181, data= [0x20, 0x00, 0x00, 0x01, self.send_data], extended_id=False)
+        self.__writer.run(msg)
 
 if __name__ == "__main__":
     uc = UMDCan()
     # while True:
-    uc.compare()
+    while True:
+        degree = int(input("원하는 각도를 입력하세요 : "))
+        uc.run(degree)

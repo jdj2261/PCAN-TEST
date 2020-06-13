@@ -16,11 +16,7 @@ CAN ID RTR IDE DLC D1 D2 D3 D4 D5 D6 D7 D8 Desc.
 0x181 0 0 5 0x20 0x00 0x00 0x01 0x01 X X X 0ch ON
 0x181 0 0 5 0x20 0x00 0x00 0x01 0x02 X X X 1ch ON
 '''
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-# from can.interface
 import can
 
 class CanWriter():
@@ -28,7 +24,7 @@ class CanWriter():
     def __init__(self, bus):
         self.__bus = bus
 
-    def write(self, msg):
+    def run(self, msg):
         try:
             self.__bus.send(msg)
             print(msg)
