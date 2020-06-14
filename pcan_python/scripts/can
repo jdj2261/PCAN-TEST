@@ -39,13 +39,13 @@ def main():
                 degree = int(input("원하는 각도를 입력하세요(90도 이하의 각도):  "))
                 if  degree <= 0 or degree >90:
                     raise_exception("90이하로 입력하세요")
-                else:
+                else:80
                     uc.run(degree)
                     
             except CustomException as e:
                 print(e)
-            except ValueError:
-                print("잘못 된 입력입니다.")
+            except :
+                print("잘못된 입력입니다.")
 
     except KeyboardInterrupt:
         print("프로그램 종료")

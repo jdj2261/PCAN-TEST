@@ -114,8 +114,8 @@ if __name__ == "__main__":
                 uc.run(degree)
             except CustomException as e:
                 print(e)
-            except ValueError:
-                print("잘못 된 입력입니다.")
+            except :
+                print("잘못된 입력입니다.")
 
     except KeyboardInterrupt:
         print("프로그램 종료")
