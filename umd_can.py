@@ -87,7 +87,7 @@ class UMDCan():
 
 
     def write(self):
-        msg = can.Message(arbitration_id=0x181, data= [0x20, 0x00, 0x00, 0x01, self.send_data], extended_id=False)
+        msg = can.Message(arbitration_id=0x181, data = [0x20, 0x00, 0x00, 0x01, self.send_data], extended_id=False)
         self.__writer.run(msg)
 
 class CustomException(Exception):
