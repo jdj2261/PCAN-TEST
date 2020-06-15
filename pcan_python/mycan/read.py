@@ -8,9 +8,6 @@ Author: Dae Jong Jin
 Description: Can 통신 Read 예제
 '''
 
-import can
-from can.bus import BusState
-
 class CanReader():
 
     def __init__(self, bus):
@@ -38,11 +35,3 @@ class CanReader():
             result = int(result, 16)
             # print(result)
             return result
-
-
-if __name__ == "__main__":
-    bus = can.interface.Bus(bustype='pcan', channel='PCAN_USBBUS1', bitrate=500000)
-    cr = CanReader(bus)
-
-    while True :
-        print(cr.run())

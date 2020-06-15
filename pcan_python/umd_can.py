@@ -2,19 +2,29 @@
 # -*- coding: utf-8 -*-
 
 '''
-Created Date: June 10. 2020
-Copyright: UNMANNED SOLUTION
-Author: Dae Jong Jin 
-Description: Can 통신 Process
+Summary         : 8CH RELAY BOARD lights up by receiving SAS CAN 
+Copyright       : UNMANNED SOLUTION
+Author          : DaeJong Jin (djjin@unmansol.com) 
+Version         : v0.0.1 (June 15. 2020)
+Created Date    : June 10. 2020
+Completed Data  : June 15. 2020
 '''
+'''
+SAS CAN
+
 
 '''
-PACKET DEFINITION
-CAN ID RTR IDE DLC D1 D2 D3 D4 D5 D6 D7 D8 Desc.
-0x181 0 0 5 0x20 0x00 0x00 0x01 0xff X X X 0~7ch ON
-0x181 0 0 5 0x20 0x00 0x00 0x01 0x00 X X X 0~7ch OFF
-0x181 0 0 5 0x20 0x00 0x00 0x01 0x01 X X X 0ch ON
-0x181 0 0 5 0x20 0x00 0x00 0x01 0x02 X X X 1ch ON
+'''
+RELAY2CAN 8CH
+from http://rovitek.com/download/rp/RELAY2CAN-8CH/RELAY2CAN-8CH_E-RLY-CA_131_Manual.pdf
+DATA DEFINITION
+--------------------------------------------------------------
+CANID RTR IDE DLC  D1   D2   D3   D4   D5  D6 D7 D8  Desc.
+0x181  0   0  5   0x20 0x00 0x00 0x01 0xff X  X  X  0~7ch ON
+0x181  0   0  5   0x20 0x00 0x00 0x01 0x00 X  X  X  0~7ch OFF
+0x181  0   0  5   0x20 0x00 0x00 0x01 0x01 X  X  X  0ch   ON
+0x181  0   0  5   0x20 0x00 0x00 0x01 0x02 X  X  X  1ch   ON
+--------------------------------------------------------------
 '''
 
 '''
@@ -30,10 +40,20 @@ from mycan.write import CanWriter
 from threading import Thread
 
 class UMDCan():
+    '''
+    Initialize variable for connecting to mongoDB
+    Param: dbName(database name)
+    Return: None 
+    '''
     bus = can.interface.Bus(bustype='pcan', 
                             channel='PCAN_USBBUS1', 
                             bitrate=500000)
 
+    '''
+    Initialize variable for connecting to mongoDB
+    Param: dbName(database name)
+    Return: None 
+    '''
     def __init__(self):
         self.__reader    = CanReader(UMDCan.bus)
         self.__writer    = CanWriter(UMDCan.bus)
@@ -42,7 +62,7 @@ class UMDCan():
         self.DEGREE      = 0
         self.CUR_STATUS  = 0
         self.PRE_STATUS  = 0
-        self.send_data   = 0
+
 
     def run(self, degree):
         self.DEGREE      = degree
@@ -58,7 +78,7 @@ class UMDCan():
         if read_data is not None:
             if read_data == 0:
                 self.CUR_STATUS = 0
-                self.send_data = 0
+                send_data = 0
 
             elif THRESHOLD <= read_data <= 65535-THRESHOLD:
                 self.CUR_STATUS = THRESHOLD
@@ -77,17 +97,16 @@ class UMDCan():
                     print("prestatus : {0}, curstatus : {1}".format(self.PRE_STATUS, self.CUR_STATUS))
 
                     if self.CUR_STATUS == i+1:
-                        self.send_data = pow(2,i+1) -1
+                        send_data = pow(2,i+1) -1
                     elif self.CUR_STATUS == (-1) * (i+1):
-                        self.send_data = pow(2,i+1) * (pow(2,8-(i+1))-1)
+                        send_data = pow(2,i+1) * (pow(2,8-(i+1))-1)
                     elif self.CUR_STATUS == THRESHOLD:
-                        self.send_data = 0x81
-                    self.write()
+                        send_data = 0x81
+                    self.write(send_data)
                     self.PRE_STATUS = self.CUR_STATUS
 
-
-    def write(self):
-        msg = can.Message(arbitration_id=0x181, data = [0x20, 0x00, 0x00, 0x01, self.send_data], extended_id=False)
+    def write(self, data):
+        msg = can.Message(arbitration_id=0x181, data = [0x20, 0x00, 0x00, 0x01, data], extended_id=False)
         self.__writer.run(msg)
 
 class CustomException(Exception):
@@ -107,14 +126,14 @@ if __name__ == "__main__":
 
     while True:
         try :
-            degree = int(input("원하는 각도를 입력하세요(90도 이하의 각도):  "))
-            if  0 >= degree or degree >90:
+            degree = int(input("원하는 각도를 입력하세요(90도 이하의 각도): "))
+            if  0 >= degree or degree > 90:
                 raise_exception("90이하로 입력하세요")
             uc.run(degree)
         except CustomException as e:
             print(e)
         except KeyboardInterrupt:
-            print("\n프로그램 종료")
+            print("\n프로그램 종료...")
             exit(0)
         except :
             print("잘못된 입력입니다.")
