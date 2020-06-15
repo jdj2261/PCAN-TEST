@@ -36,6 +36,13 @@
 
 #ifndef UMD_PCAN_H
 #define UMD_PCAN_H
+
+#define MAX_VEL		7800
+#define INCREMENT 	10.017
+inline unsigned long THRESHOLD(int x)
+{
+	return (MAX_VEL/90) * x;
+} 
 /*****************************************************************************
 ** Includes
 *****************************************************************************/
@@ -46,6 +53,7 @@
 #include <string.h>
 #include <asm/types.h>
 #include <iostream>
+#include <math.h>
 #include "PCANBasic.h"
 
 namespace unmansol
@@ -56,10 +64,15 @@ namespace unmansol
 		{
 		private:
 			/* Variables */
-			unsigned int Device;
-			unsigned long ulIndex = 0;
-			unsigned int send_data = 0;
-			unsigned int square = 0;
+			unsigned int _device;
+			unsigned long _ulIndex;
+			unsigned int _send_data;
+			unsigned int _square;
+			unsigned int _parse_data;
+
+			int _curStatus;
+			int _preStatus;
+			int _degree;
 
 			/* data */
 		public:
@@ -75,7 +88,7 @@ namespace unmansol
 			 * @param device
 			 *      The <code>Exception</code> instance to copy.
 			 */
-			Pcan(unsigned int device);
+			Pcan(unsigned int device, int degree);
 			
 			/**
 			 * DeConstructor
@@ -83,19 +96,21 @@ namespace unmansol
 
 			virtual ~Pcan();
 
-			TPCANMsg RMessage;
-			TPCANMsg TMessage;
-			TPCANStatus Status;
+			TPCANMsg _RMessage;
+			TPCANMsg _TMessage;
+			TPCANStatus _RStatus;
+			TPCANStatus _TStatus;
 
 			bool onInitialize();
 			void onStart();
 			void onExcute();
 
-			void read();
-			void write();
+			void write(unsigned int data);
 
 			TPCANMsg receive_all();
-			int parse_rawdata(TPCANMsg msg);
+			unsigned int read();
+			unsigned int parse_rawdata(TPCANMsg msg);
+			void compare(unsigned long threshold);
 
 			static void signal_handler(int s)
 			{

@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "Makefile": "cmake-cache",
         "functional": "cpp",
         "thread": "cpp",
         "chrono": "cpp",
@@ -49,6 +50,7 @@
         "cinttypes": "cpp",
         "utility": "cpp",
         "typeindex": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "string": "cpp"
     }
 }

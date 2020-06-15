@@ -29,7 +29,10 @@ FILES4  = $(SRC)/$(TARGET4).cpp
 TARGET5 = umd_pcan
 FILES5  = $(SRC)/$(TARGET5).cpp 
 
-ALL = $(TARGET1) $(TARGET2) $(TARGET3) $(TARGET4) $(TARGET5)
+TARGET6 = test
+FILES6  = $(SRC)/$(TARGET6).cpp 
+
+ALL = $(TARGET1) $(TARGET2) $(TARGET3) $(TARGET4) $(TARGET5) $(TARGET6)
 
 #--- note -------------------------------------------------------------------
 # Because these examples have to be built BEFORE libpcanbasic (as well as
@@ -119,6 +122,10 @@ $(TARGET4): $(FILES4)
 
 $(TARGET5): $(FILES5)
 	$(CXX) $(POSIX_CXXFLAG) $^ $(POSIX_LDFLAGS) -o $@
+
+$(TARGET6): $(FILES6)
+	$(CXX) $(POSIX_CXXFLAG) $^ $(POSIX_LDFLAGS) -o $@
+
 xeno:
 	$(MAKE) RT=XENOMAI
 
