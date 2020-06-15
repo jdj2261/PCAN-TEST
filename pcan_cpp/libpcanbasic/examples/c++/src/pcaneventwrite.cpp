@@ -27,6 +27,9 @@
 #include <string.h>
 #include <asm/types.h>
 #include <unistd.h>
+#include <math.h>
+#include <unistd.h>
+
 
 #ifndef NO_RT
 #include <sys/mman.h>
@@ -57,6 +60,7 @@ static struct sigaction oldact;
 static void signal_handler(int s)
 {
 	printf("Interrupted by SIG%u!\n", s);
+	exit(1);
 }
 
 static int setup_sig_handler(int signum, void (*f)(int))
@@ -70,6 +74,11 @@ static int setup_sig_handler(int signum, void (*f)(int))
 	return sigaction(signum, &act, &oldact);
 }
 
+static void u_sleep(unsigned int milliseconds)
+{
+	usleep(milliseconds * 1000); // takes microseconds
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <summary>	Main entry-point for this application. </summary>
 ///
@@ -81,11 +90,14 @@ static int setup_sig_handler(int signum, void (*f)(int))
 /// <returns>	. </returns>
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 int main(int argc, char* argv[]) 
 {
 	TPCANStatus Status;
 	unsigned int tx_count = 0;
 	unsigned int pcan_device = PCAN_DEVICE;
+	unsigned int send_data = 0;
+	unsigned int i = 0;
 
 #ifndef NO_RT
 	mlockall(MCL_CURRENT | MCL_FUTURE);
@@ -126,10 +138,11 @@ int main(int argc, char* argv[])
 		goto lbl_close;
 
 	TPCANMsg Message;
-	Message.ID = 0x77;
+	Message.ID = 0x181;
 	Message.LEN = 8;
-	Message.MSGTYPE = PCAN_MESSAGE_EXTENDED;
+	Message.MSGTYPE = PCAN_MESSAGE_STANDARD;
 	memset(Message.DATA, '\0', sizeof(Message.DATA));
+
 
 	printf("Entering infinite loop (^C to break)...\n");
 
@@ -153,11 +166,29 @@ int main(int argc, char* argv[])
 			printf("CAN_Write(%xh) failure 0x%x\n", pcan_device, (int) Status);
 			break;
 		}
+		
+		Message.DATA[0] = 0x20;
+		Message.DATA[1] = 0x00;
+		Message.DATA[2] = 0x00;
+		Message.DATA[3] = 0x01;
+		Message.DATA[4] = send_data;
 
+		// for(int i=0 ; i<8; i++)
+		// {
+
+		send_data = pow(2,i+1) -1;
+		// }
+		++i;
+		if (i > 8) 
+		{
+			i = 0;
+			send_data = 0;
+		}
+		
 		// increment data bytes
-		for (int i = 0; i < 8; i++)
-			if (++Message.DATA[i])
-				break;
+		// for (int i = 0; i < 8; i++)
+		// 	if (++Message.DATA[i])
+		// 		break;
 
 		tx_count++;
 		printf("  - S ID:%4x LEN:%1x DATA:%02x %02x %02x %02x %02x %02x %02x %02x\n",
@@ -167,6 +198,8 @@ int main(int argc, char* argv[])
 				(int) Message.DATA[5], (int) Message.DATA[6],
 				(int) Message.DATA[7]);
 
+		u_sleep(100);		
+		
 #ifdef XENOMAI
 		// force flush of printf buffers 
 		if (!(tx_count % 100))

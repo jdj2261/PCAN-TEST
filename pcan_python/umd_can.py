@@ -105,17 +105,16 @@ if __name__ == "__main__":
     uc = UMDCan()
     # while True:
 
-    try :
-        while True:
-            try :
-                degree = int(input("원하는 각도를 입력하세요(90도 이하의 각도):  "))
-                if  0 >= degree or degree >90:
-                    raise_exception("90이하로 입력하세요")
-                uc.run(degree)
-            except CustomException as e:
-                print(e)
-            except :
-                print("잘못된 입력입니다.")
-
-    except KeyboardInterrupt:
-        print("프로그램 종료")
+    while True:
+        try :
+            degree = int(input("원하는 각도를 입력하세요(90도 이하의 각도):  "))
+            if  0 >= degree or degree >90:
+                raise_exception("90이하로 입력하세요")
+            uc.run(degree)
+        except CustomException as e:
+            print(e)
+        except KeyboardInterrupt:
+            print("\n프로그램 종료")
+            exit(0)
+        except :
+            print("잘못된 입력입니다.")

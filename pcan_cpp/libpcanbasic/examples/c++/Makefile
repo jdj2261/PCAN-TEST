@@ -26,7 +26,7 @@ FILES3  = $(SRC)/$(TARGET3).cpp
 TARGET4 = pcaneventwrite
 FILES4  = $(SRC)/$(TARGET4).cpp 
 
-TARGET5 = test
+TARGET5 = umd_pcan
 FILES5  = $(SRC)/$(TARGET5).cpp 
 
 ALL = $(TARGET1) $(TARGET2) $(TARGET3) $(TARGET4) $(TARGET5)
@@ -39,6 +39,7 @@ ALL = $(TARGET1) $(TARGET2) $(TARGET3) $(TARGET4) $(TARGET5)
 # line options are useless and SHOULD NOT be added to the PCAN-Basic 
 # application compilation command line.
 PCANBASIC_ROOT := ../../pcanbasic
+PCAN_CPP_ROOT  := ./include
 
 -include $(PCANBASIC_ROOT)/src/pcan/.config
 
@@ -48,8 +49,8 @@ else
 PCAN_ROOT = $(PCANBASIC_ROOT)/src/pcan
 endif
 
-CFLAGS += -I$(PCANBASIC_ROOT) -I$(PCAN_ROOT)/driver
-LDFLAGS += -L$(PCANBASIC_ROOT) -Wl,-rpath $(PCANBASIC_ROOT)
+CFLAGS += -I$(PCANBASIC_ROOT) -I$(PCAN_ROOT)/driver -I$(PCAN_CPP_ROOT)
+LDFLAGS += -L$(PCANBASIC_ROOT) -Wl,-rpath $(PCANBASIC_ROOT) 
 
 #--- end of note ------------------------------------------------------------
 
