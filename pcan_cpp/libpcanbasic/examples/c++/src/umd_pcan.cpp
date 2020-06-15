@@ -121,18 +121,6 @@ namespace unmansol
         return result_data;
     }
 
-    void Pcan::write(unsigned int data)
-    {
-        unsigned int send_data;
-        send_data = data;
-        _TMessage.DATA[0] = 0x20;
-        _TMessage.DATA[1] = 0x00;
-        _TMessage.DATA[2] = 0x00;
-        _TMessage.DATA[3] = 0x01;
-        _TMessage.DATA[4] = send_data;
-		_TStatus = CAN_Write(this->_device, &_TMessage);
-    }
-
     void Pcan::compare(unsigned long threshold)
     {
         unsigned int read_data;
@@ -178,6 +166,19 @@ namespace unmansol
             }
         }
     }
+
+    void Pcan::write(unsigned int data)
+    {
+        unsigned int send_data;
+        send_data = data;
+        _TMessage.DATA[0] = 0x20;
+        _TMessage.DATA[1] = 0x00;
+        _TMessage.DATA[2] = 0x00;
+        _TMessage.DATA[3] = 0x01;
+        _TMessage.DATA[4] = send_data;
+        _TStatus = CAN_Write(this->_device, &_TMessage);
+    }
+
 
     } //namespace can
 
