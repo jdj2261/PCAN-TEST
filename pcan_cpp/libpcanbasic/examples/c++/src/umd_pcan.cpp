@@ -24,9 +24,9 @@ namespace unmansol
     Pcan::Pcan(unsigned int device, int degree) 
         : _device(0)
         , _ulIndex(0)
-		, _send_data(0)
-		, _square(0)
-		, _parse_data(0)
+        , _send_data(0)
+        , _square(0)
+        , _parse_data(0)
         , _curStatus(0)
         , _preStatus(0)
     {
