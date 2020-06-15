@@ -53,7 +53,7 @@ namespace unmansol
         memset(this->_TMessage.DATA, '\0', sizeof(this->_TMessage.DATA));
 
         // 0이 아니면 종료
-        if (this->_RStatus) exit(1);
+        if (this->_RStatus) return false;
         else return true;
 
     }
@@ -74,7 +74,7 @@ namespace unmansol
                 break;
             }
 
-            if (_TStatus != PCAN_ERROR_OK) 
+            if (this->_TStatus != PCAN_ERROR_OK) 
             {
 			printf("CAN_Write(%xh) failure 0x%x\n", this->_device, (int)this->_TStatus);
 			// break;
@@ -87,6 +87,11 @@ namespace unmansol
         std::cout << "Start" << std::endl;
         bool isConnect = onInitialize();
         if (isConnect) onExcute();
+        else 
+        {
+            printf("연결을 확인해 주세요 \n");
+            exit(1);
+        }
     }
 
     unsigned int Pcan::read()
