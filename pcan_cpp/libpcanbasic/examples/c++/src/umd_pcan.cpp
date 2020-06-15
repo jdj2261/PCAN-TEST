@@ -76,9 +76,9 @@ namespace unmansol
 
             if (this->_TStatus != PCAN_ERROR_OK) 
             {
-			printf("CAN_Write(%xh) failure 0x%x\n", this->_device, (int)this->_TStatus);
-			// break;
-		    }
+                printf("CAN_Write(%xh) failure 0x%x\n", this->_device, (int)this->_TStatus);
+                // break;
+            }
         }
     }
 
