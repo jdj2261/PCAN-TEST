@@ -1,5 +1,6 @@
 #include "umd_pcan.hpp"
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <summary>	Main entry-point for this application. </summary>
 ///
@@ -31,7 +32,7 @@ namespace unmansol
         , _preStatus(0)
     {
         this->_device = device; 
-        this->_device = degree;
+        this->_degree = degree;
         printf("Degree : %d \n", degree);
     }
 
@@ -43,7 +44,7 @@ namespace unmansol
     {
         std::cout << "Initialize" << std::endl;
         this->_RStatus = CAN_Initialize(this->_device, PCAN_BAUD_500K, 0, 0, 0);  
-
+        std::cout << _RStatus << std::endl;
         /* 
         *  TMessage Init
         */
@@ -66,7 +67,7 @@ namespace unmansol
         {
 
             this->_parse_data = this->read();
-            this->compare(THRESHOLD(90));
+            this->compare(THRESHOLD(_degree));
 
             if (this->_RStatus != PCAN_ERROR_OK) 
             {
@@ -90,7 +91,7 @@ namespace unmansol
         else 
         {
             printf("연결을 확인해 주세요 \n");
-            exit(1);
+            // exit(1);
         }
     }
 
@@ -122,7 +123,7 @@ namespace unmansol
     {
         unsigned int result_data;
         result_data = (msg.DATA[0]) | (msg.DATA[1] << 8);
-        std::cout << result_data << std::endl; 
+        // std::cout << result_data << std::endl; 
         return result_data;
     }
 
@@ -144,22 +145,24 @@ namespace unmansol
         int right_rotate_data = read_data - 65535;
         int left_rotate_data = read_data;
 
+        // printf("right_rotate_data : %d, left_rotate_data : %d\n", right_rotate_data, left_rotate_data);
+
         for(int i = 0; i < 8 ; i++)
         {
-            if ((int)(INCREMENT * _degree) * (-1) * (i+1) < right_rotate_data && 
-                right_rotate_data< (int)(INCREMENT * _degree) * (-1) * (i))
+            if (((int)(INCREMENT * _degree)) * (-1) * (i+1) < right_rotate_data && 
+                right_rotate_data < ((int)(INCREMENT * _degree)) * (-1) * (i))
                 {
                     _curStatus = (-1) * (i+1);
                 }
-            else if ((int)(INCREMENT * _degree) * (-1) * (i+1) < left_rotate_data &&
-                left_rotate_data< (int)(INCREMENT * _degree) * (-1) * (i))
+            else if (((int)(INCREMENT * _degree)) * (i) < left_rotate_data &&
+                left_rotate_data < ((int)(INCREMENT * _degree)) * (i+1))
                 {
                     _curStatus = i+1;
                 }
             
             if (_preStatus != _curStatus)
             {
-                printf("prestatus : %d, curstatus : %d", _preStatus, _curStatus);
+                printf("prestatus : %d, curstatus : %d\n", _preStatus, _curStatus);
             
                 if      (_curStatus == i+1)         send_data = pow(2,i+1)-1;
                 else if (_curStatus == (-1)*(i+1))  send_data = pow(2,i+1) * (pow(2,8-(i+1))-1);

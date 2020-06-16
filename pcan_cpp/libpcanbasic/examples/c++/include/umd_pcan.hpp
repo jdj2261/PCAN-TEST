@@ -100,22 +100,22 @@ namespace unmansol
 			TPCANMsg _TMessage;
 			TPCANStatus _RStatus;
 			TPCANStatus _TStatus;
-
+			TPCANMsg receive_all();
+			unsigned int read();
 			bool onInitialize();
 			void onStart();
 			void onExcute();
 
 			void write(unsigned int data);
-
-			TPCANMsg receive_all();
-			unsigned int read();
 			unsigned int parse_rawdata(TPCANMsg msg);
 			void compare(unsigned long threshold);
 
 			static void signal_handler(int s)
 			{
 				printf("Interrupted by SIG%u!\n", s);
+				exit(1);
 			}
+			
 		};		
 	}	// namespace can
 } 		// namespace unmansol

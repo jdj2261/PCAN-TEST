@@ -42,7 +42,7 @@ import string                  ## String functions
 import time                    ## Time-related library
 import threading               ## Threading-based Timer library
 
-import platform                ## Underlying platform’s info library
+import platform                ## Underlying platformï¿½s info library
 
 TCL_DONT_WAIT           = 1<<1
 TCL_WINDOW_EVENTS       = 1<<2

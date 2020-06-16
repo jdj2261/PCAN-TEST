@@ -91,7 +91,7 @@ class UMDCan():
                     self.CUR_STATUS = (-1) * (i+1)
                 elif int(self.INCREMENT * self.DEGREE) * i < left_rotate_data < int(self.INCREMENT * self.DEGREE) * (i+1):
                     self.CUR_STATUS = i+1                                         
-                # print("{0} {1}".format(right_rotate_data, left_rotate_data))
+                print("Left rotate: {0} Right rotate: {1}".format(left_rotate_data, right_rotate_data))
 
                 if self.PRE_STATUS != self.CUR_STATUS:
                     print("prestatus : {0}, curstatus : {1}".format(self.PRE_STATUS, self.CUR_STATUS))
