@@ -8,24 +8,23 @@ Author: Dae Jong Jin
 Description: Can 통신 Read 예제
 '''
 
+"""
+['Timestamp:', '2726190.858044', 'ID:', '02b0', 'S', 'DLC:', '5', '69', '00', '00', '07', '6e']
+Data Constructure : little endian : data[8] + data[7]
+"""
+
 class CanReader():
 
     def __init__(self, bus):
         self.__bus = bus
-        self.__msg = None
-
-    def receive_all(self):
-        self.__msg = self.__bus.recv(1)
-        if self.__msg is not None:
-            # print(self.__msg)
-            return self.__msg
-
+        """
+        CanReader API calss implementation
+        Parameter bus : can.interface.Bus(bustype='pcan',
+                                channel='PCAN_USBBUS1',
+                                bitrate=500000)
+        """
     def run(self):
-        '''
-        ['Timestamp:', '2726190.858044', 'ID:', '02b0', 'S', 'DLC:', '5', '69', '00', '00', '07', '6e']
-        * Data Constructure
-          little endian : data[8] + data[7]
-        '''
+
         self.receive_all()
         result = ''
         msg = str(self.__msg).split()
@@ -33,5 +32,22 @@ class CanReader():
             # print(msg)
             result = msg[8] + msg[7]
             result = int(result, 16)
-            # print(result)
+            # print("DEC : {0}\t HEX : {0:04x}\t BIN : {0:016b}".format(result))
             return result
+        """ 
+        Filter received the raw data
+        Parameter: msg 
+        Return: result(filtering SAS(Steering Angle Sensor)'s data)
+        """
+
+    def receive_all(self):
+        self.__msg = self.__bus.recv(1)
+        if self.__msg is not None:
+            return self.__msg
+        """ 
+        Recieve CAN raw data
+        Parameter: msg 
+        Return: msg 
+        """
+
+

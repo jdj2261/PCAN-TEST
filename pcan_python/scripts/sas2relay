@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+'''
+Created Date: June 12. 2020
+Copyright: UNMAND SOLUTION
+Author: Dae Jong Jin 
+Description: PCAN 통신
+'''
+
+import sys, os
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from umd_can import UmdCan
+
+# class CustomException(Exception):
+#     def __init__(self, value):
+#         self.value = value
+
+#     def __str__(self):
+#         return self.value
+
+# def raise_exception(err_msg):
+#     raise CustomException(err_msg)
+
+
+if __name__ == "__main__":
+    """     
+    main 
+    The user enters the desired angle
+    """
+    uc = UmdCan()
+    # while True:
+
+    while True:
+        try:
+            degree = int(input("원하는 각도를 입력하세요: "))
+            # raise raise_exception("test")
+            while True:
+                uc.run(degree)
+        # except CustomException as e:
+        #     print(e)
+        except KeyboardInterrupt:
+            print("\n프로그램 종료...")
+            exit(0)
+        except NameError:
+            print("잘못된 입력입니다.")
+        
