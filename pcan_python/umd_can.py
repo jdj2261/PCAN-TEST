@@ -62,6 +62,7 @@ class UmdCan():
             self.__MAX_VEL/(90) * degree > self.__MAX_VEL) else self.__MAX_VEL/(90) * degree
 
         read_data = self.__reader.run()
+        print(read_data)
         self.compare(read_data)
         """
         read and process data
