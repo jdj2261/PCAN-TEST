@@ -28,12 +28,18 @@ class CanReader():
         self.receive_all()
         result = ''
         msg = str(self.__msg).split()
+        '''
+        ['Timestamp:', '3407476.104066', 'ID:', '02b0', 'S', 'DLC:', '5', '4a', '11', '00', '07', '6f']
+        '''
+        # print(msg)
+        search = 'DLC:'
         if msg is not None:
-            # print(msg)
-            result = msg[8] + msg[7]
-            result = int(result, 16)
-            # print("DEC : {0}\t HEX : {0:04x}\t BIN : {0:016b}".format(result))
-            return result
+            if search in msg:
+                i = msg.index(search)
+                result = msg[i+3] + msg[i+2]
+                result = int(result, 16)
+                # print("DEC : {0}\t HEX : {0:04x}\t BIN : {0:016b}".format(result))
+                return result
         """ 
         Filter received the raw data
         Parameter: msg 

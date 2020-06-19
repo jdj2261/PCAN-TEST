@@ -36,6 +36,9 @@ import time
 from mycan import CanReader, CanWriter
 from threading import Thread
 
+MAX_VEL = 7800
+INCREMENT = 10.017
+
 class UmdCan():
 
     bus = can.interface.Bus(bustype='pcan',
@@ -53,8 +56,8 @@ class UmdCan():
         self.PRE_STATUS = 0
         self.THRESHOLD = 0
         self._send_data = 0
-        self.__MAX_VEL = 7800
-        self.__INCREMENT = 10.017
+        self.__MAX_VEL = MAX_VEL
+        self.__INCREMENT = INCREMENT
     
     def run(self, degree):
         self.DEGREE = degree
@@ -62,7 +65,7 @@ class UmdCan():
             self.__MAX_VEL/(90) * degree > self.__MAX_VEL) else self.__MAX_VEL/(90) * degree
 
         read_data = self.__reader.run()
-        print(read_data)
+        # print(read_data)
         self.compare(read_data)
         """
         read and process data
@@ -133,7 +136,6 @@ class UmdCan():
         After determining whether the current SAS direction is positive or negative, 
         and rotating by the entered degree, 
         the LEDs turn on one by one.
-
         Parameter: data(Filtered data)
         Return: None
         """
@@ -148,9 +150,9 @@ class UmdCan():
         Parameter: data(Send data)
         Return: None
         """
-    def write(self, data):
+    def write(self, read_data):
         msg = can.Message(arbitration_id=0x181, data=[
-                          0x20, 0x00, 0x00, 0x01, data], extended_id=False)
+                          0x20, 0x00, 0x00, 0x01, read_data], extended_id=False)
         self.__writer.run(msg)
 
         """
@@ -178,8 +180,8 @@ if __name__ == "__main__":
             degree = int(input("원하는 각도를 입력하세요(90도 이하의 각도): "))
             while True:
                 uc.run(degree)
-        except CustomException as e:
-            print(e)
+        # except CustomException as e:
+        #     print(e)
         except KeyboardInterrupt:
             print("\n프로그램 종료...")
             exit(0)
