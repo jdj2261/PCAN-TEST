@@ -12,6 +12,9 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from umd_can import UmdCan
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+log_dir = '{}/log'.format(current_dir)
+
 # class CustomException(Exception):
 #     def __init__(self, value):
 #         self.value = value
@@ -28,20 +31,24 @@ if __name__ == "__main__":
     main 
     The user enters the desired angle
     """
-    uc = UmdCan()
     # while True:
-
     while True:
         try:
             degree = int(input("원하는 각도를 입력하세요: "))
+            uc = UmdCan(degree)
             # raise raise_exception("test")
             while True:
-                uc.run(degree)
+                uc.run()
         # except CustomException as e:
         #     print(e)
         except KeyboardInterrupt:
+            uc.log.error("프로그램 강제 종료..")
             print("\n프로그램 종료...")
             exit(0)
         except NameError:
             print("잘못된 입력입니다.")
+        except Exception as e:
+            uc.log.error(e)
+
+
         

@@ -26,4 +26,6 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.log
+log
 

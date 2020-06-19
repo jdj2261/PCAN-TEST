@@ -33,8 +33,14 @@ Timestamp:  3218253.436089        ID: 02b0    S          DLC: 5    07 00 00 07 6
 
 import can
 import time
-from mycan import CanReader, CanWriter
+from mycan import CanReader, CanWriter, Logger
 from threading import Thread
+
+import os
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+log_dir = '{}/log'.format(current_dir)
+# FILE_NAME = '{}/log'.format(current_dir)
 
 MAX_VEL = 7800
 INCREMENT = 10.017
@@ -48,21 +54,25 @@ class UmdCan():
     """
     Relay LED lights after receiving SAS data
     """
-    def __init__(self):
+    def __init__(self, degree):
         self.__reader = CanReader(UmdCan.bus)
         self.__writer = CanWriter(UmdCan.bus)
-        self.DEGREE = 0
+        self.log = Logger(log_dir, logname='SAS2RELAY')
+
+        self.DEGREE = degree
         self.CUR_STATUS = 0
         self.PRE_STATUS = 0
         self.THRESHOLD = 0
         self._send_data = 0
         self.__MAX_VEL = MAX_VEL
         self.__INCREMENT = INCREMENT
+
+        self.log.info('Start..')
+        self.log.info(str(degree) + " degree input received")
     
-    def run(self, degree):
-        self.DEGREE = degree
+    def run(self):
         self.THRESHOLD = self.__MAX_VEL if (
-            self.__MAX_VEL/(90) * degree > self.__MAX_VEL) else self.__MAX_VEL/(90) * degree
+            self.__MAX_VEL/(90) * self.DEGREE > self.__MAX_VEL) else self.__MAX_VEL/(90) * self.DEGREE
 
         read_data = self.__reader.run()
         # print(read_data)
@@ -128,8 +138,9 @@ class UmdCan():
                     elif self.CUR_STATUS == self.THRESHOLD:
                         self._send_data = 0x81
                         print("OVERRIDE: {0}".format(bin(self._send_data)))
+                        self.log.warning("OVERRIDE")
 
-                    self.print_rotate(self._send_data)
+                    self.log_rotate(self._send_data)
                     self.write(self._send_data)
                     self.PRE_STATUS = self.CUR_STATUS
         """
@@ -140,11 +151,15 @@ class UmdCan():
         Return: None
         """
 
-    def print_rotate(self, data):
+    def log_rotate(self, data):
         if self.CUR_STATUS > self.PRE_STATUS:
             print("LEFT ROTATE: {0}".format(bin(data)))
+            log_data = "LEFT ROTATE: " + "{0:b}".format(data).zfill(8)
+            self.log.info(log_data)
         else:
             print("RIGHT ROTATE: {0}".format(bin(data)))
+            log_data = "RIGHT ROTATE: " + "{0:b}".format(data).zfill(8)
+            self.log.info(log_data)
         """
         Shows which direction to rotate and what data to send
         Parameter: data(Send data)
@@ -172,17 +187,19 @@ class UmdCan():
     # raise CustomException(err_msg)
 
 if __name__ == "__main__":
-    uc = UmdCan()
+    
     # while True:
 
     while True:
         try:
             degree = int(input("원하는 각도를 입력하세요(90도 이하의 각도): "))
+            uc = UmdCan(degree)
             while True:
-                uc.run(degree)
+                uc.run()
         # except CustomException as e:
         #     print(e)
         except KeyboardInterrupt:
+            uc.log.error("프로그램 강제 종료..")
             print("\n프로그램 종료...")
             exit(0)
         # except NameError:
