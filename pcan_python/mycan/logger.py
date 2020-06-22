@@ -23,7 +23,9 @@ class Logger():
 
         self.logger = logging.getLogger(logname)
         self.logger.setLevel(level)
+        self.handler()
 
+    def handler(self):
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
         file_handler = logging.FileHandler(self.__filename)
@@ -33,7 +35,6 @@ class Logger():
         stream_handler = logging.StreamHandler()
         stream_handler.setFormatter(formatter)
         self.logger.addHandler(stream_handler)
-
 
     def debug(self, msg):
         self.logger.debug(msg)
