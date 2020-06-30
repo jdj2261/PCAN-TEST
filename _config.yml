@@ -1,1 +1,36 @@
-theme: jekyll-theme-slate
+#theme: jekyll-theme-slate
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your entire site, values
+# which you are expected to set up once and rarely need to edit after that.
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# `jekyll serve`. If you change this file, please restart the server process.
+
+# Theme Settings
+#
+# Review documentation to determine if you should use `theme` or `remote_theme`
+# https://mmistakes.github.io/minimal-mistakes/docs/quick-start-guide/#installing-the-theme
+
+
+# 테마 설정에 대한 부분입니다. 기본 설정을 유지하였습니다.
+theme                  : "minimal-mistakes-jekyll"
+#remote_theme           : "mmistakes/minimal-mistakes"
+
+# 스킨을 설정하는 부분입니다. 
+minimal_mistakes_skin    : "dark" # "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
+
+
+# Site Settings
+locale                   : "ko-KR" # 사이트의 언어 설정을 할 수있습니다.
+# 표시되는 언어의 내용은 _data/ui-text.yml 에서 수정이 가능합니다.
+
+title                    : "Imreplay blog" # 블로그 제목
+title_separator          : "-" # 글 제목 - 블로그 제목  과 같이 사이트를 표시해줍니다.
+name                     : "Imreplay" # 사이트 소유자의 이름을 사용합니다.(Used to assign a site author.)
+description              : "Imreplay's personal website." # 사이트에 대한 간단한 설명입니다.
+url                      : "https://jdj2261.github.io" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
+# 사이트의 주소를 입력합니다.
+
+baseurl                  : # the subpath of your site, e.g. "/blog"
+# 사이트의 baseurl을 설정해 줍니다.
+
