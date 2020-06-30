@@ -2,6 +2,13 @@ import can
 import time
 
 '''
+Created Date: June 30. 2020
+Copyright: UNMANNED SOLUTION
+Author: Dae Jong Jin 
+Description: SAS Initialize
+'''
+
+'''
 SAS에 ID 0x7C0로 아래의 값을 순차적으로 보내면 현재 값에서 초기화
 1. 05 2B
 2. 03 2B
