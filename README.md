@@ -69,6 +69,8 @@ $ pcanview
 
 https://github.com/jdj2261/PCAN-TEST.git
 
+테스트 영상 : https://www.youtube.com/watch?v=ibM16Gtvp-s
+
 ## 1. Description
 
 This is a test that turns on/off the RELAY2CAN LED by receiving SAS can data.
